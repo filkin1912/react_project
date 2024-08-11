@@ -1,30 +1,37 @@
-import React, {useState, useEffect, useContext} from "react";
-import {AuthContext} from "../../context/AuthContext";
-import {authServiceFactory} from "../../services/authService";
-import {useForm} from "../../hooks/useForm";
-import {useParams} from "react-router-dom";
-import {useService} from "../../hooks/useService";
-import {userServiceFactory} from "../../services/userService";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { authServiceFactory } from "../../services/authService";
+import { useForm } from "../../hooks/useForm";
+import { useParams } from "react-router-dom";
+import { useService } from "../../hooks/useService";
+import { userServiceFactory } from "../../services/userService";
 
-export const UserDetails = ({onUserEditSubmit,}) => {
+export const UserDetails = ({ onUserEditSubmit, }) => {
 
+
+    
     const { userEmail, userId } = useContext(AuthContext);
 
-    // const userId = useParams();
     const userDataService = useService(userServiceFactory);
-    const {values, changeHandler, onSubmit, changeValues} = useForm({
+    const { values, changeHandler, onSubmit, changeValues } = useForm({
+        _id: '',
         nationality: '',
         age: '',
         imageUrl: '',
     }, onUserEditSubmit);
 
-
+    // 
     useEffect(() => {
-        userDataService.additionalInfo(userId)
-            .then(result => {
-                changeValues(result);
-            });
+        if (userId) {
+            userDataService.additionalInfoByOwnerId(userId)
+                .then(result => {
+
+                    changeValues(result);
+                });
+        }
     }, [userId]);
+
+
 
     return (
         <div>
@@ -60,7 +67,7 @@ export const UserDetails = ({onUserEditSubmit,}) => {
                             value={values.imageUrl}
                             onChange={changeHandler}
                         />
-                        <input className="btn submit" type="submit" value="SAVE"/>
+                        <input className="btn submit" type="submit" value="SAVE" />
 
                     </div>
                 </form>
