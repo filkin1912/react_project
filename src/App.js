@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {Routes, Route, useNavigate, useLocation} from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import { gameServiceFactory } from "./services/gameService";
 import { authServiceFactory } from "./services/authService";
@@ -15,9 +15,9 @@ import { Login } from "./components/Login/Login";
 import { Footer } from "./components/Basic/Footer/Footer";
 import { Catalog } from "./components/Catalog/Catalog";
 import { DetailsGame } from "./components/DetailsGame/DetailsGame";
-import {UserDetails} from "./components/UserDetails/UserDetails";
-import {UserDetailsPage} from "./components/UserDetails/UserDetailsPage";
-import {userServiceFactory} from "./services/userService";
+import { UserDetails } from "./components/UserDetails/UserDetails";
+import { UserDetailsPage } from "./components/UserDetails/UserDetailsPage";
+import { userServiceFactory } from "./services/userService";
 
 
 function App() {
@@ -32,19 +32,19 @@ function App() {
 
 
   useEffect(() => {
-  if(location.pathname !== '/catalog') {
-    setFilteredGames([]);
-  }
+    if (location.pathname !== '/catalog') {
+      setFilteredGames([]);
+    }
 
-  gameService.getAll()
-    .then(result => {
+    gameService.getAll()
+      .then(result => {
         setGames(result)
-    })
-}, [location]);
+      })
+  }, [location]);
 
   const handleSearch = (searchTerm) => {
     const results = games.filter(game =>
-        game.title.toLowerCase().includes(searchTerm.toLowerCase())
+      game.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     if (!results.length) {
       setFilteredGames([]);
@@ -117,14 +117,14 @@ function App() {
   const onUserEditSubmit = async (values) => {
     console.log(`___________BEFORE SERVER____________`);
 
-    const result = await userService.update(values._ownerId, values);
-    console.log(result);
+    const result = await userService.update(values._id, values);
+    if (result._id) alert("Details updated");
 
-    navigate(`/`);
+    navigate(`/details/${values._ownerId}`);
   };
 
   const onGameDeleteSubmit = async (gameId) => {
-    
+
     await gameService.delete(gameId);
     setGames((state) => state.filter((x) => (x._id !== gameId)));
 
@@ -147,27 +147,27 @@ function App() {
         <Header onSearch={handleSearch} />
 
         <Routes>
-          <Route path="/" element={<Home games={games}/>} />
-          <Route path="/catalog" element={<Catalog games={games} filteredGames={filteredGames}/>} />
+          <Route path="/" element={<Home games={games} />} />
+          <Route path="/catalog" element={<Catalog games={games} filteredGames={filteredGames} />} />
           <Route path='/catalog/:gameId' element={<DetailsGame onGameDeleteSubmit={onGameDeleteSubmit} />} />
           <Route
-              path="/catalog/:gameId/edit"
-              element={<EditGame onGameEditSubmit={onGameEditSubmit} />}
+            path="/catalog/:gameId/edit"
+            element={<EditGame onGameEditSubmit={onGameEditSubmit} />}
           />
           <Route
-              path="/details/:userId"
-              element={<UserDetails onUserEditSubmit={onUserEditSubmit}/>}
+            path="/details/:userId"
+            element={<UserDetails onUserEditSubmit={onUserEditSubmit} />}
           />
           <Route path="/user-details" element={<UserDetailsPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout />} />
           <Route
-              path="/create"
-              element={<CreateGame onCreateGameSubmit={onCreateGameSubmit} />}
+            path="/create"
+            element={<CreateGame onCreateGameSubmit={onCreateGameSubmit} />}
           />
           <Route path="/login" element={<Login />} />
         </Routes>
-    
+
         <Footer />
       </div>
     </AuthContext.Provider>
